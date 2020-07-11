@@ -86,15 +86,27 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/importExample.js":
-/*!******************************!*\
-  !*** ./src/importExample.js ***!
-  \******************************/
-/*! exports provided: ImportExample */
+/***/ "./src/app/app.js":
+/*!************************!*\
+  !*** ./src/app/app.js ***!
+  \************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ImportExample\", function() { return ImportExample; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n/*  Example Class\r\n    Demonstrates ES6 import function in main.js\r\n */\n//==============================================================================\nvar ImportExample =\n/*#__PURE__*/\nfunction () {\n  function ImportExample() {\n    var txt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : \"DEFAULT TEXT\";\n\n    _classCallCheck(this, ImportExample);\n\n    this.txt = txt;\n  }\n\n  _createClass(ImportExample, [{\n    key: \"getText\",\n    value: function getText() {\n      return \"An ImportExample class was imported; it has the text: \" + this.txt;\n    }\n  }]);\n\n  return ImportExample;\n}(); //==============================================================================\n\n//# sourceURL=webpack:///./src/importExample.js?");
+eval("__webpack_require__.r(__webpack_exports__);\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar TILE_SIZE = 32;\nvar GRID_WIDTH = 16;\nvar GRID_HEIGHT = 5;\n\nvar App = /*#__PURE__*/function () {\n  function App() {\n    _classCallCheck(this, App);\n\n    this.html = {\n      console: document.getElementById(\"console\"),\n      canvas: document.getElementById(\"canvas\")\n    };\n    this.html.canvas.width = TILE_SIZE * GRID_WIDTH;\n    this.html.canvas.height = TILE_SIZE * GRID_HEIGHT;\n    this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this));\n  }\n\n  _createClass(App, [{\n    key: \"onPointerDown\",\n    value: function onPointerDown(e) {\n      var coords = getEventCoords(e, this.html.canvas);\n      console.log(coords);\n      stopEvent(e);\n    }\n  }]);\n\n  return App;\n}();\n\nfunction getEventCoords(event, element) {\n  var xRatio = element.width && element.offsetWidth ? element.width / element.offsetWidth : 1;\n  var yRatio = element.height && element.offsetHeight ? element.height / element.offsetHeight : 1;\n  var x = event.offsetX * xRatio;\n  var y = event.offsetY * yRatio;\n  return {\n    x: x,\n    y: y\n  };\n}\n\nfunction stopEvent(e) {\n  if (!e) return false;\n  e.preventDefault && e.preventDefault();\n  e.stopPropagation && e.stopPropagation();\n  e.returnValue = false;\n  e.cancelBubble = true;\n  return false;\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (App);\n\n//# sourceURL=webpack:///./src/app/app.js?");
+
+/***/ }),
+
+/***/ "./src/app/index.js":
+/*!**************************!*\
+  !*** ./src/app/index.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app */ \"./src/app/app.js\");\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (_app__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n//# sourceURL=webpack:///./src/app/index.js?");
 
 /***/ }),
 
@@ -106,7 +118,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _importExample_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./importExample.js */ \"./src/importExample.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n/*  \r\nStarter JS\r\n----------\r\n\r\nStarter template for JavaScript web app projects.\r\n\r\n(Shaun A. Noordin | shaunanoordin.com | 20180413)\r\n */\n\n/*  Primary App Class\r\n */\n//==============================================================================\n\nvar App = function App() {\n  _classCallCheck(this, App);\n\n  var importExample = new _importExample_js__WEBPACK_IMPORTED_MODULE_0__[\"ImportExample\"](\"HI THERE\");\n  this.console = document.getElementById(\"console\");\n  this.console.innerHTML = \"This is a starter template for JS projects. <br>\" + importExample.getText();\n}; //==============================================================================\n\n/*  Initialisations\r\n */\n//==============================================================================\n\n\nvar app;\n\nwindow.onload = function () {\n  window.app = new App();\n}; //==============================================================================\n\n//# sourceURL=webpack:///./src/main.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app */ \"./src/app/index.js\");\n/*  \nBull, China Shop\n----------------\n\nA game about smashing things.\n\n(Shaun A. Noordin | shaunanoordin.com | 20200711)\n */\n\nvar app;\n\nwindow.onload = function () {\n  window.app = new _app__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\n};\n\n//# sourceURL=webpack:///./src/main.js?");
 
 /***/ })
 
