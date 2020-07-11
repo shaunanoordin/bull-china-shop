@@ -1,6 +1,6 @@
 const TILE_SIZE = 32
 const GRID_WIDTH = 16
-const GRID_HEIGHT = 5
+const GRID_HEIGHT = 10
 
 
 class App {
@@ -10,10 +10,80 @@ class App {
       canvas: document.getElementById("canvas"),
     }
     
-    this.html.canvas.width = TILE_SIZE * GRID_WIDTH
-    this.html.canvas.height = TILE_SIZE * GRID_HEIGHT
+    this.canvas2d = this.html.canvas.getContext('2d')
+    this.canvasWidth = TILE_SIZE * GRID_WIDTH
+    this.canvasHeight = TILE_SIZE * GRID_HEIGHT
     
+    this.html.canvas.width = this.canvasWidth
+    this.html.canvas.height = this.canvasHeight
     this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this))
+    
+    this.ready = false
+    this.assets = {
+      // ...
+    }
+
+    this.prevTime = null
+    this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
+  }
+  
+  initialisationCheck () {
+    // Assets check
+    let allAssetsLoaded = true
+    let numLoadedAssets = 0
+    let numTotalAssets = 0
+    Object.keys(this.assets).forEach((id) => {
+      const asset = this.assets[id]
+      allAssetsLoaded = allAssetsLoaded && asset.loaded
+      if (asset.loaded) numLoadedAssets++
+      numTotalAssets++
+    })
+    
+    // Paint status
+    this.canvas2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+    this.canvas2d.textAlign = 'start'
+    this.canvas2d.textBaseline = 'top'
+    this.canvas2d.fillStyle = '#ccc'
+    this.canvas2d.font = `1em monospace`
+    this.canvas2d.fillText(`Loading ${numLoadedAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
+    
+    if (allAssetsLoaded) {
+      this.ready = true
+    }
+  }
+  
+  main (time) {
+    const timeStep = (this.prevTime) ? time - this.prevTime : time
+    this.prevTime = time
+    
+    if (this.ready) {
+      this.play(timeStep)
+      this.paint()
+    } else {
+      this.initialisationCheck()
+    }
+    
+    this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
+  }
+  
+  play (timeStep) {
+    
+  }
+  
+  paint () {
+    const c2d = this.canvas2d
+    
+    c2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+    
+    c2d.strokeStyle = 'rgba(128, 128, 128, 0.5)'
+    
+    for (let row = 0 ; row < GRID_HEIGHT ; row ++) {
+      for (let col = 0 ; col < GRID_WIDTH ; col ++) {
+        c2d.beginPath()
+        c2d.rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+        c2d.stroke()
+      }
+    }
   }
   
   onPointerDown (e) {
