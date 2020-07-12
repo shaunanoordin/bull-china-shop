@@ -1,7 +1,6 @@
-const TILE_SIZE = 32
-const GRID_WIDTH = 16
-const GRID_HEIGHT = 10
-
+const TILE_SIZE = 64
+const GRID_WIDTH = 24
+const GRID_HEIGHT = 16
 
 class App {
   constructor () {
