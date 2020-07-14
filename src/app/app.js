@@ -1,6 +1,5 @@
-const TILE_SIZE = 64
-const GRID_WIDTH = 24
-const GRID_HEIGHT = 16
+import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE } from './constants'
+import Entity from './entity'
 
 class App {
   constructor () {
@@ -21,6 +20,9 @@ class App {
     this.assets = {
       // ...
     }
+    
+    this.player = null
+    this.entities = []
 
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -48,7 +50,23 @@ class App {
     
     if (allAssetsLoaded) {
       this.ready = true
+      this.loadLevel(0)
     }
+  }
+  
+  resetLevel () {
+    this.player = undefined
+    this.entities = []
+  }
+  
+  loadLevel (level = 0) {
+    this.resetLevel()
+    
+    this.player = new Entity(this)
+    this.player.x = TILE_SIZE * GRID_WIDTH / 2
+    this.player.y = TILE_SIZE * GRID_HEIGHT / 2
+    this.entities.push(this.player)
+    
   }
   
   main (time) {
@@ -66,7 +84,7 @@ class App {
   }
   
   play (timeStep) {
-    
+    this.entities.forEach(entity => entity.play())
   }
   
   paint () {
@@ -83,6 +101,8 @@ class App {
         c2d.stroke()
       }
     }
+    
+    this.entities.forEach(entity => entity.paint())
   }
   
   onPointerDown (e) {
@@ -110,6 +130,5 @@ function stopEvent (e) {
   e.cancelBubble = true
   return false
 }
-
 
 export default App
