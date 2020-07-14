@@ -1,4 +1,4 @@
-import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE } from './constants'
+import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, EXPECTED_TIMESTEP } from './constants'
 import Entity from './entity'
 
 class App {
@@ -85,6 +85,8 @@ class App {
   
   play (timeStep) {
     this.entities.forEach(entity => entity.play())
+    
+    this.processPhysics(timeStep)
   }
   
   paint () {
@@ -110,6 +112,34 @@ class App {
     console.log(coords)
     
     stopEvent(e)
+  }
+  
+  processPhysics (timeStep) {
+    const timeCorrection = (timeStep / EXPECTED_TIMESTEP)
+    
+    // Move Actors and Particles
+    this.entities.forEach(entity => {
+      entity.x += entity.moveX * timeCorrection
+      entity.y += entity.moveY * timeCorrection
+    })
+    
+    for (let a = 0; a < this.entities.length; a++) {
+      let entityA = this.entities[a]
+      
+      for (let b = a + 1; b < this.entities.length; b++) {
+        let entityB = this.entities[b]
+        let collisionCorrection = Physics.checkCollision(entityA, entityB)
+                
+        if (collisionCorrection) {
+          entityA.x = collisionCorrection.ax;
+          entityA.y = collisionCorrection.ay;
+          entityB.x = collisionCorrection.bx;
+          entityB.y = collisionCorrection.by;
+          entityA.onCollision(entityB, collisionCorrection);
+          entityB.onCollision(entityA, collisionCorrection);
+        }
+      }
+    }  
   }
 }
 
