@@ -10,7 +10,6 @@ class Entity {
     
     this.size = TILE_SIZE
     
-    
     // Movement: self locomotion and external (pushed) movement.
     this.moveX = 0
     this.moveY = 0
@@ -21,9 +20,22 @@ class Entity {
     this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
     this.solid = false
     this.movable = false
+    
+    // this.moveAcceleration = 0.5;
+    this.moveDeceleration = 0.5;
+    this.moveMaxSpeed = 8;
   }
   
-  play () {
+  play (timeStep) {
+    
+    // Upkeep: deceleration
+    const moveDeceleration = this.moveDeceleration * timeStep / 1000 || 0;
+    const curRotation = Math.atan2(this.moveY, this.moveX)
+    const curMoveSpeed = Math.sqrt(this.moveX * this.moveX + this.moveY * this.moveY);
+    const newMoveSpeed = Math.max(0, curMoveSpeed - moveDeceleration);
+
+    this.moveX = newMoveSpeed * Math.cos(curRotation);
+    this.moveY = newMoveSpeed * Math.sin(curRotation);
     
   }
   

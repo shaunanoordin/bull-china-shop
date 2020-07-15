@@ -1,4 +1,4 @@
-import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, EXPECTED_TIMESTEP, MODES } from './constants'
+import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, EXPECTED_TIMESTEP, MODES, ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY } from './constants'
 import Entity from './entity'
 
 class App {
@@ -103,7 +103,7 @@ class App {
   }
   
   play (timeStep) {
-    this.entities.forEach(entity => entity.play())
+    this.entities.forEach(entity => entity.play(timeStep))
     
     this.processPhysics(timeStep)
   }
@@ -134,20 +134,22 @@ class App {
         && this.playerInput.pointerCurrent
        ) {
       
-      const coords = this.playerInput.pointerCurrent
+      const inputCoords = this.playerInput.pointerCurrent
       
       c2d.strokeStyle = '#888'
       c2d.lineWidth = TILE_SIZE / 8
       
       c2d.beginPath()
       c2d.moveTo(this.player.x, this.player.y)
-      c2d.lineTo(coords.x, coords.y)
-      c2d.arc(coords.x, coords.y, this.size / 2, 0, 2 * Math.PI);
+      c2d.lineTo(inputCoords.x, inputCoords.y)
+      c2d.stroke()
+      c2d.beginPath()
+      c2d.arc(inputCoords.x, inputCoords.y, ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY, 0, 2 * Math.PI);
       c2d.stroke()
 
       const arrowCoords = {
-        x: this.player.x - (coords.x - this.player.x),
-        y: this.player.y - (coords.y - this.player.y),
+        x: this.player.x - (inputCoords.x - this.player.x),
+        y: this.player.y - (inputCoords.y - this.player.y),
       }
       c2d.strokeStyle = '#e42'
       c2d.lineWidth = TILE_SIZE / 8
@@ -172,7 +174,6 @@ class App {
       const distFromPlayer = Math.sqrt(distX * distX + distY + distY)
       const rotation = Math.atan2(distY, distX)
       
-      const ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY = TILE_SIZE
       if (distFromPlayer < ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY) {
         this.mode = MODES.ACTION_PLAYER_INTERACTING
         this.playerInput.pointerStart = coords
@@ -208,6 +209,25 @@ class App {
   }
   
   shoot () {
+    if (!this.player || !this.playerInput.pointerCurrent) return
+    
+    const inputCoords = this.playerInput.pointerCurrent
+    const directionX = this.player.x - inputCoords.x
+    const directionY = this.player.y - inputCoords.y
+    const dist = Math.sqrt(directionX * directionX + directionY * directionY)
+    const rotation = Math.atan2(directionY, directionX)
+
+    const MAX_PULL_DISTANCE = TILE_SIZE * 4
+    const intendedMovement = dist / MAX_PULL_DISTANCE * this.player.moveMaxSpeed
+    const movementSpeed = Math.min(
+      intendedMovement,
+      this.player.moveMaxSpeed
+    )
+    
+    console.log('MOVEMENT SPEED: ', movementSpeed)
+    
+    this.player.moveX = Math.cos(rotation) * movementSpeed
+    this.player.moveY = Math.sin(rotation) * movementSpeed
     
   }
   
