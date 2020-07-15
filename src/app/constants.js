@@ -27,6 +27,13 @@ export const DIRECTIONS = {
   NORTH: 3,
 }
 
+export const MODES = {
+  INITIALISING: 'initialising',
+  ACTION_IDLE: 'action-idle',  // Action mode; nothing is happening
+  ACTION_PLAYER_INTERACTING: 'action-player-interacting',  // Action mode; player is actively interacting
+  ACTION_MOVEMENT: 'action-movement',  // Action mode; movement is happening as a result of player interaction
+}
+
 /*
 While the engine is technically able to support any given framerate (determined
 by the hardware), a baseline is required to ground our video game logic to.

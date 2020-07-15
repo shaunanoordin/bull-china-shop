@@ -1,4 +1,4 @@
-import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, EXPECTED_TIMESTEP } from './constants'
+import { GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, EXPECTED_TIMESTEP, MODES } from './constants'
 import Entity from './entity'
 
 class App {
@@ -7,6 +7,8 @@ class App {
       console: document.getElementById("console"),
       canvas: document.getElementById("canvas"),
     }
+    
+    this.mode = MODES.INITIALISING
     
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = TILE_SIZE * GRID_WIDTH
@@ -33,6 +35,12 @@ class App {
     
     this.player = null
     this.entities = []
+    
+    this.playerInput = {
+      pointerStart: undefined,
+      pointerCurrent: undefined,
+      pointerEnd: undefined,
+    }
 
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -65,6 +73,7 @@ class App {
   }
   
   resetLevel () {
+    this.mode = MODES.ACTION_IDLE
     this.player = undefined
     this.entities = []
   }
@@ -105,7 +114,9 @@ class App {
     c2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
     
     c2d.strokeStyle = 'rgba(128, 128, 128, 0.5)'
+    c2d.lineWidth = 1
     
+    // Draw grid
     for (let row = 0 ; row < GRID_HEIGHT ; row ++) {
       for (let col = 0 ; col < GRID_WIDTH ; col ++) {
         c2d.beginPath()
@@ -114,26 +125,90 @@ class App {
       }
     }
     
+    // Draw entities
     this.entities.forEach(entity => entity.paint())
+    
+    // Draw player input
+    if (this.mode === MODES.ACTION_PLAYER_INTERACTING
+        && this.player
+        && this.playerInput.pointerCurrent
+       ) {
+      
+      const coords = this.playerInput.pointerCurrent
+      
+      c2d.strokeStyle = '#888'
+      c2d.lineWidth = TILE_SIZE / 8
+      
+      c2d.beginPath()
+      c2d.moveTo(this.player.x, this.player.y)
+      c2d.lineTo(coords.x, coords.y)
+      c2d.arc(coords.x, coords.y, this.size / 2, 0, 2 * Math.PI);
+      c2d.stroke()
+
+      const arrowCoords = {
+        x: this.player.x - (coords.x - this.player.x),
+        y: this.player.y - (coords.y - this.player.y),
+      }
+      c2d.strokeStyle = '#e42'
+      c2d.lineWidth = TILE_SIZE / 8
+      
+      c2d.beginPath()
+      c2d.moveTo(this.player.x, this.player.y)
+      c2d.lineTo(arrowCoords.x, arrowCoords.y)
+      c2d.stroke()
+    }
   }
   
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    console.log('+++ DOWN ', coords)
+    
+    this.playerInput.pointerStart = undefined
+    this.playerInput.pointerCurrent = undefined
+    this.playerInput.pointerEnd = undefined
+    
+    if (this.player) {
+      const distX = this.player.x - coords.x
+      const distY = this.player.y - coords.y
+      const distFromPlayer = Math.sqrt(distX * distX + distY + distY)
+      const rotation = Math.atan2(distY, distX)
+      
+      const ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY = TILE_SIZE
+      if (distFromPlayer < ACCEPTABLE_INPUT_DISTANCE_FROM_PLAYER_ENTITY) {
+        this.mode = MODES.ACTION_PLAYER_INTERACTING
+        this.playerInput.pointerStart = coords
+        this.playerInput.pointerCurrent = coords
+      }
+    }
     
     return stopEvent(e)
   }
   
   onPointerMove (e) {
     const coords = getEventCoords(e, this.html.canvas)
+    this.playerInput.pointerCurrent = coords
+    
+    if (this.mode === MODES.ACTION_PLAYER_INTERACTING) {
+      // ...
+    }
+    
     return stopEvent(e)
   }
   
   onPointerUp (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    console.log('+++ UP ', coords)
+    
+    if (this.mode === MODES.ACTION_PLAYER_INTERACTING) {
+      this.playerInput.pointerEnd = coords
+      // this.mode = MODES.ACTION_MOVEMENT
+      this.mode = MODES.ACTION_IDLE
+      this.shoot()
+    }
     
     return stopEvent(e)
+  }
+  
+  shoot () {
+    
   }
   
   processPhysics (timeStep) {

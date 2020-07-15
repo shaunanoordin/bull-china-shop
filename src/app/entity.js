@@ -1,4 +1,4 @@
-import { TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES } from './constants'
+import { TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, MODES } from './constants'
 
 class Entity {
   constructor (app) {
@@ -30,8 +30,15 @@ class Entity {
   paint () {
     const c2d = this._app.canvas2d
     
+    c2d.fillStyle = '#844'
+    
+    // DEBUG
+
+    if (this._app.mode === MODES.ACTION_PLAYER_INTERACTING) {      
+      c2d.fillStyle = '#e42'
+    }
+    
     c2d.beginPath();
-    c2d.fillStyle = '#c44'
     c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI);
     c2d.fill()
   }
