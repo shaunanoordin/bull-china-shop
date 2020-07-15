@@ -14,7 +14,17 @@ class App {
     
     this.html.canvas.width = this.canvasWidth
     this.html.canvas.height = this.canvasHeight
+    
     this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this))
+    this.html.canvas.addEventListener('pointermove', this.onPointerMove.bind(this))
+    this.html.canvas.addEventListener('pointerup', this.onPointerUp.bind(this))
+    this.html.canvas.addEventListener('pointercancel', this.onPointerUp.bind(this))
+    
+    // Prevent "touch and hold to open context menu" interaction on touchscreens.
+    this.html.canvas.addEventListener('touchstart', stopEvent)
+    this.html.canvas.addEventListener('touchmove', stopEvent)
+    this.html.canvas.addEventListener('touchend', stopEvent)
+    this.html.canvas.addEventListener('touchcancel', stopEvent)
     
     this.ready = false
     this.assets = {
@@ -109,9 +119,21 @@ class App {
   
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    console.log(coords)
+    console.log('+++ DOWN ', coords)
     
-    stopEvent(e)
+    return stopEvent(e)
+  }
+  
+  onPointerMove (e) {
+    const coords = getEventCoords(e, this.html.canvas)
+    return stopEvent(e)
+  }
+  
+  onPointerUp (e) {
+    const coords = getEventCoords(e, this.html.canvas)
+    console.log('+++ UP ', coords)
+    
+    return stopEvent(e)
   }
   
   processPhysics (timeStep) {
